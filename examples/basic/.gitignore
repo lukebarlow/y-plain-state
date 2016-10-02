@@ -1,0 +1,3 @@
+*.txt
+/bower_components/
+/y-leveldb-databases/

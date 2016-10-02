@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+window.PAGE = 'main'
+window.SHOW_LOGGING = true
+  </script>
+  <script src="qadi.js"></script>
+  <link rel="stylesheet" href="qadi.css" />
+  <link rel="stylesheet" href="qa.css" />
+</head>
+<body>
+  <button onclick="newRoom()">new room</button><br />
+  <br />
+  <div id="qadi">
+    <span style="display:none">
+      Open the console and manipulate the variable called 'state' directly. For example<br />
+      <pre>
+      state.name = 'name for state'
+      state.testList = [1, 2, 3]</pre>
+      Open the same page in another browser and check that all the changes sync correctly<br />
+      <br />
+    </span>
+    <table class="tests">
+      <tr style="font-weight:bold">
+        <td>do it</td><td>works locally</td><td>works remotely</td>
+      </tr>
+      <tr>
+        <td><button onclick="Object.keys(state).forEach((key) => {delete state[key]})">delete all keys</button></td>
+        <td><li>delete all local</li></td>
+        <td><li>delete all remote</li></td>
+      </tr>
+      <tr>
+        <td><button onclick="state.name='henry'">state.name='henry'</button></td>
+        <td><li>set name local</li></td>
+        <td><li>set name remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.child = {}">state.child = {}</button>
+        </td>
+        <td><li>set child object local</li></td>
+        <td><li>set child object remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.child = []">state.child = []</button>
+        </td>
+        <td><li>set child array local</li></td>
+        <td><li>set child arry remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.child = 4">state.child = 4</button>
+        </td>
+        <td><li>set child primitive local</li></td>
+        <td><li>set child primitive remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.child = { a: 1 }">state.child = { a: 1 }</button>
+        </td>
+        <td><li>set child populated object local</li></td>
+        <td><li>set child populated object remote</li></td>
+      </tr>
+      
+      <tr>
+        <td>
+          <button onclick="state.child = { a: 1, b : 2}">state.child = { a: 1, b : 2}</button>
+        </td>
+        <td><li>set child local</li></td>
+        <td><li>set child remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.child = { x : { y : 1}}">state.child = { x : { y : 1}}</button>
+        </td>
+        <td><li>set recursive local</li></td>
+        <td><li>set recursive remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.child.a++">state.child.a++</button>
+        </td>
+        <td><li>child++ local</li></td>
+        <td><li>child++ remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.child.a--">state.child.a--</button>
+        </td>
+        <td><li>child-- local</li></td>
+        <td><li>child-- remote</li></td>
+      </tr>
+      
+      <tr>
+        <td>
+          <button onclick="state.list = []">state.list = []</button>
+        </td>
+        <td><li>set blank list local</li></td>
+        <td><li>set blank list remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list = [1, 2, 3]">state.list = [1, 2, 3]</button>
+        </td>
+        <td><li>set list local</li></td>
+        <td><li>set list remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list=[4, 6, 8]">state.list=[4, 6, 8]</button>
+        </td>
+        <td><li>overwrite local</li></td>
+        <td><li>overwrite remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list = [1, 2, 3];state.list=[4, 6, 8]">state.list = [1, 2, 3];state.list=[4, 6, 8]</button>
+        </td>
+        <td><li>overwrite local in thread</li></td>
+        <td><li>overwrite remote in thread</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list.pop()">state.list.pop()</button>
+        </td>
+        <td><li>pop local</li></td>
+        <td><li>pop remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list.push(27)">state.list.push(27)</button>
+        </td>
+        <td><li>push local</li></td>
+        <td><li>push remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list[1]='chicken'">state.list[1]='chicken'</button>
+        </td>
+        <td><li>array set local</li></td>
+        <td><li>array set remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list.shift()">state.list.shift()</button>
+        </td>
+        <td><li>shift local</li></td>
+        <td><li>shift remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list.push({v:1})">state.list.push({v:1})</button>
+        </td>
+        <td><li>object in array local</li></td>
+        <td><li>object in array remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list=[{v:1}]">state.list=[{v:1}]</button>
+        </td>
+        <td><li>state.list=[{v:1}] local</li></td>
+        <td><li>state.list=[{v:1}] remote</li></td>
+      </tr>
+      <tr>
+      <tr>
+        <td>
+          <button onclick="state.list[0].v++">state.list[0].v++</button>
+        </td>
+        <td><li>grandchild++ local</li></td>
+        <td><li>grandchild++ remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list=[{}]">state.list=[{}]</button>
+        </td>
+        <td><li>state.list=[{}] local</li></td>
+        <td><li>state.list=[{}] remote</li></td>
+      </tr>
+      <tr>
+        <td>
+          <button onclick="state.list=[4,{v:1}]">state.list=[4,{v:1}]</button>
+        </td>
+        <td><li>state.list=[4,{v:1}] local</li></td>
+        <td><li>state.list=[4,{v:1}] remote</li></td>
+      </tr>
+
+    </table>
+
+    <br />
+  </div>
+
+  <table>
+  <tr style="font-weight:bold">
+    <td>Local State</td>
+    <td>Remote State</td>
+  </tr>
+  <tr>
+    <td>
+<pre id="data" style="width:200px"></pre>
+    </td>
+    <td>
+      <iframe src="state_only.html" scrolling="no"></iframe>
+    </td>
+  </tr>
+  </table>
+  
+  <script src="./js/bundle.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+body, html {
+    height: 100%;
+}
+
+button {
+    font-size: 10px;
+}
+
+body, td {
+    font-family: arial;
+    font-size: 10pt;
+}
+
+td {
+    vertical-align:top;
+}
+
+.tests td:first-child {
+    text-align: center;
+}
+
+li {
+    list-style-type: none;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/*body {
+    margin:0px;
+}
+*/
+iframe {
+    display:inline-block;
+    height:100%;
+    border-width:0pt;
+}
+
+#page {
+    padding-top:30px;
+}
+
+#values {
+    margin-top:20px;
+    margin-left:20px;
+}
+
+.value {
+    cursor:pointer;
+}
+
+#qadi {
+    color:black;
+}
+
+#main {
+    padding-left: 10px;
+}
