@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Yubiquity : Sync plain javascript data between clients">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Yubiquity</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/lukebarlow/yubiquity">View on GitHub</a>
+
+          <h1 id="project_title">Yubiquity</h1>
+          <h2 id="project_tagline">Sync plain javascript data between clients</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/lukebarlow/yubiquity/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/lukebarlow/yubiquity/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="yubiquity" class="anchor" href="#yubiquity" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>yubiquity</h1>
+
+<p>Use simple javascript data structures for state, and synchronise them across
+browsers.</p>
+
+<p>This library essentially provides an API on top of Yjs objects, so that instead
+of doing things like</p>
+
+<pre><code>state.set('key', Y.Array)
+var a = state.get('key')
+a.push([1, 2, 3])
+</code></pre>
+
+<p>Everything appears just as a normal JavaScript object, and you can do</p>
+
+<pre><code>state.a = [1,2,3]
+</code></pre>
+
+<p>Here is a slightly longer example of how you set up and use it (for complete
+examples see the examples directory )</p>
+
+<pre><code>import { getProxyForYObject } from 'yubiquity'
+
+Y({
+  db: {
+    name: 'indexeddb'
+  },
+  connector: {
+    name: 'websockets-client'
+  },
+  share: {
+    state : 'Map'
+  }
+}).then((y) =&gt; {
+  const state = getProxyForYObject(y.share.state)
+  // state is now something that appears like a normal JavaScript object,
+  // but is bound to Yjs and will sync with other connected clients
+
+  state.name = 'Set a string'
+  state.child = {
+    a : 1,
+    b : [1,2,3]
+  }
+
+  state.on('change', () =&gt; {
+    redrawUi(state) // for example
+  })
+
+})
+
+</code></pre>
+
+<p>See the examples directory for more example apps</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Yubiquity maintained by <a href="https://github.com/lukebarlow">lukebarlow</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
