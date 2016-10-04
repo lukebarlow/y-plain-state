@@ -4,6 +4,8 @@ yubiquity
 Use simple javascript data structures for state, and synchronise them across
 browsers.
 
+[Demo](https://lukebarlow.github.io/yubiquity/)
+
 This library essentially provides an API on top of Yjs objects, so that instead
 of doing things like
 
@@ -55,4 +57,4 @@ Y({
 
 ```
 
-See the examples directory for more example apps
+See the [demo](https://lukebarlow.github.io/yubiquity/) and examples directory for more example apps
