@@ -21,6 +21,7 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
+    "babel-cli": "^6.16.0",
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",
     "babel-polyfill": "^6.16.0",
@@ -28,10 +29,15 @@
     "babel-preset-stage-0": "^6.16.0",
     "cross-env": "^3.0.0",
     "jasmine-es6": "^0.1.8",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.1",
     "y-array": "^10.0.1",
     "y-map": "^10.0.1",
     "y-memory": "^8.0.7",
     "y-test": "^0.5.0",
     "yjs": "^12.0.0"
+  },
+  "dependencies": {
+    "d3-dispatch": "^1.0.1"
   }
 }
