@@ -76,6 +76,20 @@ for other types of database than `y-memory` (such as `y-websockets-client`), you
 will need to import them and bind to `yubiquity.Y`, as in the example above
 (which uses the es6 `import` syntax, instead of `require()`.
 
+When you install these extra packages, npm may give you warnings such as
+
+```
+└── UNMET PEER DEPENDENCY yjs@^11.0.0 || ^12.0.0
+```
+
+and 
+
+```
+npm WARN y-websockets-client@8.0.11 requires a peer of yjs@^11.0.0 || ^12.0.0 but none was installed.
+```
+
+But these should be ignored.
+
 Note that
 
 ```
