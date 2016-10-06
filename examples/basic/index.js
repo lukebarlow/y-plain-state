@@ -2,16 +2,12 @@ import yubiquity from '../../src/index'
 
 import YWebsocketsClient from 'y-websockets-client'
 import YWebRtc from 'y-webrtc'
-import YMemory from 'y-memory'
 import YIndexedDb from 'y-indexeddb'
 
 YWebsocketsClient(yubiquity.Y)
 YWebRtc(yubiquity.Y)
-YMemory(yubiquity.Y)
 YIndexedDb(yubiquity.Y)
 
-
-import { getProxyForYObject } from '../../src/index'
 import guid from './guid'
 
 function draw(state){
