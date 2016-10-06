@@ -11,19 +11,12 @@
     "start": "DEBUG=true node server.js"
   },
   "dependencies": {
-    "babel-preset-es2015": "^6.3.13",
-    "babel-preset-react": "^6.3.13",
-    "babel-preset-react-hmre": "^1.1.1",
-    "normalizr": "^2.2.1",
-    "react": "^15.0.1",
-    "react-dom": "^15.0.1",
-    "react-draggable": "^1.3.7",
     "y-indexeddb": "^8.1.3",
     "y-webrtc": "^8.0.5",
-    "y-websockets-client": "^8.0.10",
-    "yield-async": "0.0.2"
+    "y-websockets-client": "^8.0.10"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.3.13",
     "webpack-hot-middleware": "^2.9.1",
     "webpack": "^1.12.3",
     "webpack-dev-server": "^1.12.1"

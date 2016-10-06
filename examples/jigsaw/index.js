@@ -1,36 +1,28 @@
-import Y from 'yjs'
-import yWebRtc from 'y-webrtc'
-import yMemory from 'y-memory'
-import yIndexedDb from 'y-indexeddb'
-yWebRtc(Y)
-yIndexedDb(Y)
+import yubiquity from '../../src/index'
+
+import YWebsocketsClient from 'y-websockets-client'
+YWebsocketsClient(yubiquity.Y)
 
 import { select, mouse as d3Mouse } from 'd3-selection'
 import { drag as d3Drag } from 'd3-drag'
 import 'd3-transition'
 
-import { getProxyForYObject } from '../../src/index'
-
-Y({
+yubiquity({
   db: {
-    name: 'indexeddb'
+    name: 'memory'
   },
   connector: {
-    name: 'webrtc',
+    name: 'websockets-client',
     room: 'yubiquity-examples-jigsaw'
   },
-  share: {
-    state : 'Map'
+  default: {
+    piece1 : {translation : {x : 0, y : 0}},
+    piece2 : {translation : {x : 0, y : 0}},
+    piece3 : {translation : {x : 0, y : 0}},
+    piece4 : {translation : {x : 0, y : 0}}
   }
-}).then((y) => {
-  window.yState = y.share.state
-  const state = window.state = getProxyForYObject(y.share.state)
-
-  if (!state.piece1) state.piece1 = {translation : {x : 0, y : 0}}
-  if (!state.piece2) state.piece2 = {translation : {x : 0, y : 0}}
-  if (!state.piece3) state.piece3 = {translation : {x : 0, y : 0}}
-  if (!state.piece4) state.piece4 = {translation : {x : 0, y : 0}}
-
+}).then((state) => {
+  window.state = state
   var origin // mouse start position - translation of piece  
   var drag = d3Drag()
     .on('start', function (params) {
@@ -77,6 +69,5 @@ Y({
         return "translate(" + translation.x + "," + translation.y + ")"
       })
   })
-
 
 })

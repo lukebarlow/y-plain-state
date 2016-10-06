@@ -1,8 +1,18 @@
 import 'babel-core/register'
 import 'babel-polyfill'
 
-import getProxyForYObject from './getProxyForYObject'
+import Y from 'yjs'
+import YMap from 'y-map'
+import YArray from 'y-array'
+import YMemory from 'y-memory'
+YMap(Y)
+YArray(Y)
+YMemory(Y)
 
-export {
-  getProxyForYObject
-}
+import getProxyForYObject from './getProxyForYObject'
+import yubiquity from './yubiquity'
+
+yubiquity.Y = Y
+
+export { getProxyForYObject }
+export default yubiquity
