@@ -4,6 +4,7 @@ var webpack = require('webpack')
 module.exports = {
   devtool: 'source-map',
   entry: [
+    'babel-polyfill',
     './index'
   ],
   output: {
@@ -11,10 +12,6 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/js/'
   },
-  plugins: [
-    new webpack.IgnorePlugin(/SpecHelper/),
-    new webpack.IgnorePlugin(/.*\.md/)
-  ],
   module: {
     loaders: [
       {

@@ -1,13 +1,15 @@
 import yubiquity from '../../src/index'
 
+import { getProxyForYObject, setDefaults, Y } from '../../src/index'
 import YWebsocketsClient from 'y-websockets-client'
-YWebsocketsClient(yubiquity.Y)
+import YMemory from 'y-memory'
+Y.extend(YWebsocketsClient, YMemory)
 
 import { select, mouse as d3Mouse } from 'd3-selection'
 import { drag as d3Drag } from 'd3-drag'
 import 'd3-transition'
 
-yubiquity({
+Y({
   db: {
     name: 'memory'
   },
@@ -15,13 +17,17 @@ yubiquity({
     name: 'websockets-client',
     room: 'yubiquity-examples-jigsaw'
   },
-  default: {
+  share : { state : 'Map' }
+}).then((y) => {
+
+  const state = getProxyForYObject(y.share.state)
+  setDefaults(state, {
     piece1 : {translation : {x : 0, y : 0}},
     piece2 : {translation : {x : 0, y : 0}},
     piece3 : {translation : {x : 0, y : 0}},
     piece4 : {translation : {x : 0, y : 0}}
-  }
-}).then((state) => {
+  })
+
   window.state = state
   var origin // mouse start position - translation of piece  
   var drag = d3Drag()

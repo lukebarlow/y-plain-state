@@ -11,9 +11,6 @@
     "start": "DEBUG=true node server.js"
   },
   "dependencies": {
-    "y-indexeddb": "^8.1.3",
-    "y-webrtc": "^8.0.5",
-    "y-websockets-client": "^8.0.10"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.3.13",

@@ -1,10 +1,12 @@
 import { getProxyForYObject, setDefaults, Y } from '../../src/index'
 
 import YWebsocketsClient from 'y-websockets-client'
-import YMemory from 'y-memory'
+import YWebRtc from 'y-webrtc'
 import YIndexedDb from 'y-indexeddb'
 
-Y.extend(YWebsocketsClient, YMemory, YIndexedDb)
+YWebsocketsClient(yubiquity.Y)
+YWebRtc(yubiquity.Y)
+YIndexedDb(yubiquity.Y)
 
 import guid from './guid'
 
