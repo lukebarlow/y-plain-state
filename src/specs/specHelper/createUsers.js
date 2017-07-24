@@ -1,10 +1,12 @@
-import Y from 'yjs'
-import yMemory from 'y-memory'
-import yTest from 'y-test'
-yMemory(Y)
-yTest(Y)
+import YPlainState from '../../'
 
-import { getProxyForYObject } from '../../'
+import Y from 'yjs'
+import YMemory from 'y-memory'
+import YTest from 'y-test'
+
+Y.extend(YMemory, YTest, YPlainState)
+
+// import { getProxyForYObject } from '../../'
 
 async function createUsers (numberOfUsers) {
   if (Y.utils.globalRoom.users[0] != null) {
@@ -20,7 +22,7 @@ async function createUsers (numberOfUsers) {
       db: {
         name: 'memory',
         namespace: 'User ' + i,
-        //cleanStart: true,
+        // cleanStart: true,
         gcTimeout: -1
       },
       connector: {
@@ -34,7 +36,7 @@ async function createUsers (numberOfUsers) {
   }
   const yUsers = await Promise.all(promises).catch(console.log.bind(console))
   const states = yUsers.map((y) => {
-    return getProxyForYObject(y.share.root)
+    return Y.PlainState(y.share.root)
   })
   return states
 }

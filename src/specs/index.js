@@ -1,3 +1,1 @@
-import './getProxyForYObject.spec'
-
-export default {}
+import './YPlainState.spec'

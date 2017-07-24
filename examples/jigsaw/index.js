@@ -1,9 +1,10 @@
-import yubiquity from '../../src/index'
+import YPlainState, { setDefaults } from '../../src/index'
 
-import { getProxyForYObject, setDefaults, Y } from '../../src/index'
+import Y from 'yjs'
 import YWebsocketsClient from 'y-websockets-client'
 import YMemory from 'y-memory'
-Y.extend(YWebsocketsClient, YMemory)
+
+Y.extend(YWebsocketsClient, YMemory, YPlainState)
 
 import { select, mouse as d3Mouse } from 'd3-selection'
 import { drag as d3Drag } from 'd3-drag'
@@ -15,25 +16,24 @@ Y({
   },
   connector: {
     name: 'websockets-client',
-    room: 'yubiquity-examples-jigsaw'
+    room: 'y-plain-state-examples-jigsaw'
   },
-  share : { state : 'Map' }
+  share: { state: 'Map' }
 }).then((y) => {
-
-  const state = getProxyForYObject(y.share.state)
+  const state = Y.PlainState(y.share.state)
   setDefaults(state, {
-    piece1 : {translation : {x : 0, y : 0}},
-    piece2 : {translation : {x : 0, y : 0}},
-    piece3 : {translation : {x : 0, y : 0}},
-    piece4 : {translation : {x : 0, y : 0}}
+    piece1: {translation: {x: 0, y: 0}},
+    piece2: {translation: {x: 0, y: 0}},
+    piece3: {translation: {x: 0, y: 0}},
+    piece4: {translation: {x: 0, y: 0}}
   })
 
   window.state = state
-  var origin // mouse start position - translation of piece  
+  var origin // mouse start position - translation of piece
   var drag = d3Drag()
     .on('start', function (params) {
       // get the translation of the element
-      var translation = select(this).attr('transform').slice(10,-1).split(',').map(Number)
+      var translation = select(this).attr('transform').slice(10, -1).split(',').map(Number)
       // mouse coordinates
       var mouse = d3Mouse(this.parentNode)
       origin = {
@@ -41,11 +41,11 @@ Y({
         y: mouse[1] - translation[1]
       }
     })
-    .on("drag", function(){
+    .on('drag', function () {
       var mouse = d3Mouse(this.parentNode)
       var x = mouse[0] - origin.x // =^= mouse - mouse at dragstart + translation at dragstart
       var y = mouse[1] - origin.y
-      select(this).attr("transform", "translate(" + x + "," + y + ")")
+      select(this).attr('transform', 'translate(' + x + ',' + y + ')')
     })
     .on('end', function (piece, i) {
       // save the current translation of the puzzle piece
@@ -57,23 +57,22 @@ Y({
     })
 
   var data = [state.piece1, state.piece2, state.piece3, state.piece4]
-  var pieces = select(document.querySelector("#puzzle-example")).selectAll("path").data(data)
+  var pieces = select(document.querySelector('#puzzle-example')).selectAll('path').data(data)
 
   pieces
     .classed('draggable', true)
-    .attr("transform", function (piece) {
+    .attr('transform', function (piece) {
       var translation = piece.translation
-      return "translate(" + translation.x + "," + translation.y + ")"
+      return 'translate(' + translation.x + ',' + translation.y + ')'
     }).call(drag)
 
   state.on('change', () => {
     // whenever a property of a piece changes, update the translation of the pieces
     pieces
       .transition()
-      .attr("transform", function (piece) {
+      .attr('transform', function (piece) {
         var translation = piece.translation
-        return "translate(" + translation.x + "," + translation.y + ")"
+        return 'translate(' + translation.x + ',' + translation.y + ')'
       })
   })
-
 })

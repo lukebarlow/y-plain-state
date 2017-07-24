@@ -1,50 +1,30 @@
-import { getProxyForYObject, setDefaults, Y } from '../../src/index'
+import YPlainState from '../../src/index'
 
+import Y from 'yjs'
 import YWebsocketsClient from 'y-websockets-client'
 import YMemory from 'y-memory'
-import YIndexedDb from 'y-indexeddb'
 
-Y.extend(YWebsocketsClient, YMemory, YIndexedDb)
+Y.extend(YWebsocketsClient, YMemory, YPlainState)
 
-import guid from './guid'
-
-function draw(state){
+function draw (state) {
   var data = document.getElementById('data')
   data.innerHTML = JSON.stringify(state, null, 2)
 }
 
-var search = window.location.search
-search = search ? search.slice(1) : null
-var room = search || 'default'
-
-var iframe = document.getElementById('iframe')
-if (iframe) {
-  iframe.setAttribute('src', 'state_only.html?' + room)
-}
-
-window.newRoom = function(){
-  window.location.search = guid()
-  window.location.refresh()
-}
-
 Y({
   db: {
-    name: 'indexeddb'
+    name: 'memory'
   },
   connector: {
     name: 'websockets-client',
-    room: 'yubiquity-examples-basic-' + room
+    room: 'y-plain-state-examples-basic'
   },
-  share : { state : 'Map' }
+  share: { state: 'Map' }
 }).then((y) => {
-  const state = getProxyForYObject(y.share.state)
-  setDefaults(state, {
-    a : 1,
-    b : [4, 5, 6]
-  })
-  window.state = state
+  const state = Y.PlainState(y.share.state)
+  window.state = state // for debugging convenience
   draw(state)
-  state.on('change', () => {
+  state.observe(() => {
     draw(state)
   })
 })

@@ -1,13 +1,12 @@
-yubiquity
-=========
+y-plain-state
+=============
 
-Use simple javascript data structures for state, and synchronise them across
-browsers.
+A plugin for Yjs which allows you to interact with the state as if it were
+a plain javascript data structure.
 
-[Demo](https://lukebarlow.github.io/yubiquity/)
+[Demo](https://lukebarlow.github.io/y-plain-state/)
 
-This library essentially provides an API on top of [Yjs](http://y-js.org/) objects, so that instead
-of doing things like
+So, instead of doing
 
 ```
 state.set('key', Y.Array)
@@ -26,11 +25,13 @@ working examples see the examples directory )
 
 
 ```
-import yubiquity from 'yubiquity'
 import YWebsocketsClient from 'y-websockets-client'
-YWebsocketsClient(yubiquity.Y)
+import YMemory from 'y-memory'
+import YPlainState from 'y-plain-state'
 
-yubiquity({
+Y.extend(YWebsocketsClient, YMemory, YPlainState)
+
+Y({
   db: {
     name: 'memory'
   },
@@ -41,7 +42,10 @@ yubiquity({
     name : 'my application state',
     data : [5, 7, 2, 12]
   }
-}).then((state) => {
+}).then((y) => {
+
+  const state = Y.PlainState(y.share.state)
+
   // state is now something that appears like a normal JavaScript object,
   // but is bound to Yjs and will sync with other connected clients
   state.name = 'new name'
@@ -49,57 +53,11 @@ yubiquity({
     a : 1,
     b : [1,2,3]
   }
-  state.on('change', () => {
+  state.observe(() => {
     redrawUi(state)
   })
 })
 
 ```
 
-See the [demo](https://lukebarlow.github.io/yubiquity/) and examples directory for more example apps
-
-
-note on imports
----------------
-
-Using Yjs involves importing the core module, and then also importing the 
-_types_, _databases_ and _connectors_ that you want to use. See the **npm**
-section [here](http://y-js.org/) for an example.
-
-When yubiquity, it already imports the core `yjs`, plus `y-array`, `y-map` and
-`y-memory`. Therefore, you must _not_ install or import these again, otherwise
-the code will be confused between two different versions of the same module,
-and bugs can occur.
-
-However, for your choice of connector (`y-websockets-client`, `y-webrtc`, ...) or
-for other types of database than `y-memory` (such as `y-websockets-client`), you
-will need to import them and bind to `yubiquity.Y`, as in the example above
-(which uses the es6 `import` syntax, instead of `require()`.
-
-When you install these extra packages, npm may give you warnings such as
-
-```
-└── UNMET PEER DEPENDENCY yjs@^11.0.0 || ^12.0.0
-```
-
-and 
-
-```
-npm WARN y-websockets-client@8.0.11 requires a peer of yjs@^11.0.0 || ^12.0.0 but none was installed.
-```
-
-But these should be ignored.
-
-Note that
-
-```
-import YWebsocketsClient from 'y-websockets-client'
-YWebsocketsClient(yubiquity.Y)
-```
-
-is equivalent to
-
-```
-require('y-websockets-client')(yubiquity.Y)
-```
-
+See the [demo](https://lukebarlow.github.io/y-plain-state/) and examples directory for more example apps

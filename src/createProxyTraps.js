@@ -1,18 +1,17 @@
-import getProxyForYObject from './getProxyForYObject'
 import Y from 'yjs'
+import getProxyForYObject from './getProxyForYObject'
 
-function beginsWithUnderscore(s) {
-  return s.slice(0,1) == '_'
+function beginsWithUnderscore (s) {
+  return s.slice(0, 1) == '_'
 }
 
-function isReserved(s) {
-  return ['on', 'sort', 'shift'].indexOf(s) >= 0
+function isReserved (s) {
+  return ['on', 'sort', 'shift', 'observe'].indexOf(s) >= 0
 }
 
-function isWatchableObject(o) {
-  return typeof(o)  == 'object' && o != null
+function isWatchableObject (o) {
+  return typeof (o) === 'object' && o != null
 }
-
 
 /*
 
@@ -24,24 +23,22 @@ fireChangeAtEndOfThread - the handler which should be called when a
   change is detected
 
 */
-export default function(y, fireChangeAtEndOfThread) {
-
-  const yObjectIsMap = y.keys ? true : false
+export default function (y, fireChangeAtEndOfThread) {
+  const yObjectIsMap = !!y.keys
 
   return {
 
-    /* 
+    /*
       This 'set' proxy trap only sets values on the accompanying
       y object and not on the native object being proxied. Changes
       to the y object are observed and those changes are then
       applied to to the proxied object.
     */
-    set : function(target, key, value){
-
-      const hidden = typeof(key) == 'symbol' || beginsWithUnderscore(key) || isReserved(key)
+    set: function (target, key, value) {
+      const hidden = typeof (key) === 'symbol' || beginsWithUnderscore(key) || isReserved(key)
       if (hidden) {
         target[key] = value
-        Object.defineProperty(target, key, {enumerable : false})
+        Object.defineProperty(target, key, {enumerable: false})
         return true
       }
 
@@ -56,7 +53,7 @@ export default function(y, fireChangeAtEndOfThread) {
       if (convertValueToY) {
         const childIsMap = !Array.isArray(value)
         const childConstructor = childIsMap ? Y.Map : Y.Array
-        
+
         // first set the child object, according to the type of the
         // child and the type of the parent ...
         if (yObjectIsMap) {
@@ -82,13 +79,13 @@ export default function(y, fireChangeAtEndOfThread) {
         // populate the child proxy (which will recursively call this
         // set trap)
         if (childIsMap) {
-          for (let childKey of Object.keys(value)){
-            if (!isReserved(childKey)){
+          for (let childKey of Object.keys(value)) {
+            if (!isReserved(childKey)) {
               childProxy[childKey] = value[childKey]
             }
           }
         } else {
-          //console.log('populating child array', value)
+          // console.log('populating child array', value)
           value.forEach((item, i) => {
             childProxy[i] = item
           })
@@ -99,11 +96,9 @@ export default function(y, fireChangeAtEndOfThread) {
         // and set up the change handler on the proxy
         // TODO : this needs to be idempotent, so changes are not bubbled
         // up more than once
-        childProxy.on('change', () => {
+        childProxy.observe(() => {
           fireChangeAtEndOfThread()
         })
-
-      
       } else {
         if (yObjectIsMap) {
           y.set(key, value)
@@ -122,8 +117,8 @@ export default function(y, fireChangeAtEndOfThread) {
       return true
     },
 
-    deleteProperty : function (target, key) {
-      if (!yObjectIsMap){
+    deleteProperty: function (target, key) {
+      if (!yObjectIsMap) {
         key = parseInt(key)
       }
       y.delete(key)

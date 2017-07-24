@@ -22,9 +22,9 @@ const PROXY = Symbol('proxy')
 const OBSERVED = Symbol('observed')
 const FIRE_CHANGE = Symbol('fireChange')
 
-function getPromise(yArray, index){
+function getPromise (yArray, index) {
   var result = yArray.get(index)
-  if (result && result.then){
+  if (result && result.then) {
     return result
   } else {
     return Promise.resolve(result)
@@ -32,13 +32,12 @@ function getPromise(yArray, index){
 }
 
 // simple test for whether it's a Y type - probably a better test exists
-function isYType(o) {
-  return (o && o._model) ? true : false
+function isYType (o) {
+  return !!((o && o._model))
 }
 
-function getNativeArrayForYArray(yArray, fireChangeAtEndOfThread) {
+function getNativeArrayForYArray (yArray, fireChangeAtEndOfThread) {
   const array = yArray.toArray().map((item, i) => {
-
     // workaround for an issue where yArray.toArray returns undefined
     // for y types
     if (item == undefined) {
@@ -47,7 +46,7 @@ function getNativeArrayForYArray(yArray, fireChangeAtEndOfThread) {
 
     if (isYType(item)) {
       let p = getProxyForYObject(item)
-      p.on('change', () => {
+      p.observe(() => {
         fireChangeAtEndOfThread()
       })
       return p
@@ -58,14 +57,14 @@ function getNativeArrayForYArray(yArray, fireChangeAtEndOfThread) {
   return array
 }
 
-function getNativeObjectForYMap(yMap, fireChangeAtEndOfThread) {
+function getNativeObjectForYMap (yMap, fireChangeAtEndOfThread) {
   const object = {}
   yMap.keys().forEach((key) => {
     let value = yMap.get(key)
     if (isYType(value)) {
       value = getProxyForYObject(value)
       // apply the observer
-      value.on('change', () => {
+      value.observe(() => {
         fireChangeAtEndOfThread()
       })
     }
@@ -74,46 +73,44 @@ function getNativeObjectForYMap(yMap, fireChangeAtEndOfThread) {
   return object
 }
 
-function applyMapOp(op, parentObject, value) {
+function applyMapOp (op, parentObject, value) {
   switch (op.type) {
     case 'add' :
     case 'update' :
       parentObject[op.name] = value
-    break
+      break
     case 'delete' :
       delete parentObject[op.name]
-    break
+      break
     default :
       throw new Error('Unrecognised map op ' + op.type)
-    break
+      break
   }
 }
 
-function applyArrayOp(op, parentObject, value) {
+function applyArrayOp (op, parentObject, value) {
   switch (op.type) {
     case 'insert' :
       parentObject.splice(op.index, 0, value)
-    break
+      break
     case 'delete' :
       parentObject.splice(op.index, 1)
-    break
+      break
     default :
       throw new Error('Unrecognised array op ' + op.type)
-    break
+      break
   }
 }
 
-/* 
+/*
   this is the method called when we observe a change on the
   y object. We need to update the contents of the native
   underlying object and fire the change event. If the newly
   set value is a new y object, then we need to set up the proxy
   loop for that also
 */
-function createOpHandler(parentObject, isMap, fireChangeAtEndOfThread){
-  
-  return function processOp(op){
-
+function createOpHandler (parentObject, isMap, fireChangeAtEndOfThread) {
+  return function processOp (op) {
     // workaround. When adding a y type to a map, the op has undefined for
     // the value
     if (['add', 'update'].includes(op.type) && op.object.constructor.name == 'YMap') {
@@ -121,8 +118,8 @@ function createOpHandler(parentObject, isMap, fireChangeAtEndOfThread){
     }
 
     const value = isMap ? op.value : op.values[0]
-  
-    if (value && ['YMap', 'YArray'].includes(value.constructor.name)){   
+
+    if (value && ['YMap', 'YArray'].includes(value.constructor.name)) {
       const childProxy = getProxyForYObject(value)
       if (isMap) {
         applyMapOp(op, parentObject, childProxy)
@@ -130,14 +127,14 @@ function createOpHandler(parentObject, isMap, fireChangeAtEndOfThread){
         applyArrayOp(op, parentObject, childProxy)
       }
       fireChangeAtEndOfThread()
-      childProxy.on('change', () => {
+      childProxy.observe(() => {
         fireChangeAtEndOfThread()
       })
     } else {
       if (isMap) {
         applyMapOp(op, parentObject, op.value)
       } else {
-        if (op.values.length > 1){
+        if (op.values.length > 1) {
           throw new Error('Can currently only handle adding one value to an array at a time')
         }
         applyArrayOp(op, parentObject, op.values[0])
@@ -146,13 +143,11 @@ function createOpHandler(parentObject, isMap, fireChangeAtEndOfThread){
     }
     return Promise.resolve(true)
   }
-
 }
 
-
-function getProxyForYObject(y){
+function getProxyForYObject (y) {
   // if the proxy already exists then just return it
-  if (y[PROXY]){
+  if (y[PROXY]) {
     return y[PROXY]
   }
 
@@ -165,32 +160,37 @@ function getProxyForYObject(y){
   // this method effectively bundles multiple changes into one
   // change event which happens when the current thread
   // has finished executing
-  function fireChangeAtEndOfThread(){
+  function fireChangeAtEndOfThread () {
     dispatcher.call('syncChange')
-    if (timeout == null){
-      timeout = setTimeout(function(){
+    if (timeout == null) {
+      timeout = setTimeout(function () {
         timeout = null
         dispatcher.call('change')
       }, 1)
     }
   }
 
-  const o = (isMap ? getNativeObjectForYMap(y, fireChangeAtEndOfThread) :
-      getNativeArrayForYArray(y, fireChangeAtEndOfThread) )
+  const o = (isMap ? getNativeObjectForYMap(y, fireChangeAtEndOfThread)
+      : getNativeArrayForYArray(y, fireChangeAtEndOfThread))
 
   const proxy = new Proxy(o, createProxyTraps(y, fireChangeAtEndOfThread))
-  
-  if (!y[OBSERVED]){
+
+  if (!y[OBSERVED]) {
     y.observe(createOpHandler(o, isMap, fireChangeAtEndOfThread))
     y[OBSERVED] = true
   }
-  
-  proxy.on = function(type, handler){
+
+  proxy.on = function (type, handler) {
+    console.warn("deprecated: use state.observe(handler) instead of state.on('change', handler)")
     dispatcher.on(type + '.' + uid(), handler)
   }
 
+  proxy.observe = function (handler) {
+    dispatcher.on('change.' + uid(), handler)
+  }
+
   if (!isMap) {
-    proxy.shift = function() {
+    proxy.shift = function () {
       y.delete(0)
     }
   }

@@ -4,7 +4,6 @@ var webpack = require('webpack')
 module.exports = {
   devtool: 'source-map',
   entry: [
-    //'webpack-hot-middleware/client',
     'babel-polyfill',
     './index'
   ],
@@ -13,16 +12,11 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/js/'
   },
-  plugins: [
-    new webpack.IgnorePlugin(/SpecHelper/),
-    new webpack.IgnorePlugin(/.*\.md/)
-    //new webpack.HotModuleReplacementPlugin()
-  ],
   module: {
     loaders: [
       {
         test: /\.js$/,
-        loaders: [ 'babel' ],
+        loaders: [ 'babel-loader' ],
         exclude: /node_modules/
       }
     ]

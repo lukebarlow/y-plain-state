@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import {DraggableCore} from 'react-draggable';
+import {DraggableCore} from 'react-draggable'
 
 /*
 This is an abstract class. To make specific pieces, extend
@@ -7,18 +7,17 @@ this class and implement the _shape method to return
 the svg that should be drawn to make the shape
 */
 export default class JigsawPiece extends React.Component {
-
-  constructor() {
-    super();
-    this.drag = this.drag.bind(this);
-    this.dragStop = this.dragStop.bind(this);
-    this.dragStart = this.dragStart.bind(this);
+  constructor () {
+    super()
+    this.drag = this.drag.bind(this)
+    this.dragStop = this.dragStop.bind(this)
+    this.dragStart = this.dragStart.bind(this)
   }
 
   _drag (event, ui, isUndoWaypoint) {
     const { position } = this.props
-    position.x += ui.position.deltaX
-    position.y += ui.position.deltaY
+    position.x += ui.deltaX
+    position.y += ui.deltaY
   }
 
   dragStart (event, ui) {
@@ -31,13 +30,13 @@ export default class JigsawPiece extends React.Component {
 
   dragStop (event, ui) {}
 
-  render() {
+  render () {
     const { x, y } = this.props.position
     return (
       <DraggableCore
-        axis="x"
+        axis='x'
         onStart={this.dragStart}
-        onDrag={this.drag} 
+        onDrag={this.drag}
         onStop={this.dragStop}
         >
         <g transform={'translate(' + x + ',' + y + ')'}>
@@ -46,5 +45,4 @@ export default class JigsawPiece extends React.Component {
       </DraggableCore>
     )
   }
-
 }

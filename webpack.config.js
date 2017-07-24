@@ -1,25 +1,31 @@
-'use strict';
+'use strict'
 
 var webpack = require('webpack')
 
 var env = process.env.NODE_ENV
 var config = {
+  entry: [
+    'babel-polyfill',
+    './src/index'
+  ],
   module: {
     loaders: [
-      { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }
+      {
+        test: /\.js$/,
+        loaders: ['babel-loader'],
+        exclude: /node_modules/
+      }
     ]
   },
   output: {
-    library: 'omniscience',
+    library: 'y-plain-state',
     libraryTarget: 'umd'
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(env)
-    })
+    new webpack.IgnorePlugin(/.*\.md/),
+    new webpack.IgnorePlugin(/SpecHelper/)
   ]
-};
+}
 
 if (env === 'production') {
   config.plugins.push(
