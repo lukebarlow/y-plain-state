@@ -66,7 +66,7 @@ Y({
       return 'translate(' + translation.x + ',' + translation.y + ')'
     }).call(drag)
 
-  state.on('change', () => {
+  state.observe(() => {
     // whenever a property of a piece changes, update the translation of the pieces
     pieces
       .transition()

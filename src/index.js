@@ -1,11 +1,14 @@
 import 'babel-core/register'
 
-import Y from 'yjs'
+import YArray from 'y-array'
+import YMap from 'y-map'
 
+import YInstance from './YInstance'
 import getProxyForYObject from './getProxyForYObject'
 
 async function extend (Y) {
-  await Y.requestModules(['Array', 'Map'])
+  YInstance.Y = Y
+  Y.extend(YArray, YMap)
   Y.PlainState = function (state) {
     return getProxyForYObject(state)
   }

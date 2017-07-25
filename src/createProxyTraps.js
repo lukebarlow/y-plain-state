@@ -1,5 +1,5 @@
-import Y from 'yjs'
 import getProxyForYObject from './getProxyForYObject'
+import YInstance from './YInstance'
 
 function beginsWithUnderscore (s) {
   return s.slice(0, 1) == '_'
@@ -35,6 +35,7 @@ export default function (y, fireChangeAtEndOfThread) {
       applied to to the proxied object.
     */
     set: function (target, key, value) {
+      const Y = YInstance.Y
       const hidden = typeof (key) === 'symbol' || beginsWithUnderscore(key) || isReserved(key)
       if (hidden) {
         target[key] = value

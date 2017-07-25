@@ -1,9 +1,3 @@
-import Y from 'yjs'
-import yMap from 'y-map'
-import yArray from 'y-array'
-yArray(Y)
-yMap(Y)
-
 import { dispatch } from 'd3-dispatch'
 import createProxyTraps from './createProxyTraps'
 import uid from './uid'
@@ -152,8 +146,11 @@ function getProxyForYObject (y) {
   }
 
   y[PROXY] = 'PENDING'
+  const isMap = y.constructor.name === 'YMap'
 
-  const isMap = y.constructor.name == 'YMap'
+  // console.log('y.constructor.name is', y.constructor.name)
+  // console.log('isMap is', isMap)
+
   const dispatcher = dispatch('change', 'syncChange')
   let timeout = null
 
