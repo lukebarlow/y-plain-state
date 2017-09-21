@@ -16,14 +16,7 @@ const PROXY = Symbol('proxy')
 const OBSERVED = Symbol('observed')
 const FIRE_CHANGE = Symbol('fireChange')
 
-function getPromise (yArray, index) {
-  var result = yArray.get(index)
-  if (result && result.then) {
-    return result
-  } else {
-    return Promise.resolve(result)
-  }
-}
+
 
 // simple test for whether it's a Y type - probably a better test exists
 function isYType (o) {
@@ -152,19 +145,20 @@ function getProxyForYObject (y) {
   // console.log('isMap is', isMap)
 
   const dispatcher = dispatch('change', 'syncChange')
+  
   let timeout = null
 
   // this method effectively bundles multiple changes into one
   // change event which happens when the current thread
   // has finished executing
   function fireChangeAtEndOfThread () {
-    dispatcher.call('syncChange')
-    if (timeout == null) {
+    if (timeout === null) {
       timeout = setTimeout(function () {
         timeout = null
         dispatcher.call('change')
       }, 1)
     }
+    dispatcher.call('syncChange')
   }
 
   const o = (isMap ? getNativeObjectForYMap(y, fireChangeAtEndOfThread)

@@ -6,8 +6,6 @@ import YTest from 'y-test'
 
 Y.extend(YMemory, YTest, YPlainState)
 
-// import { getProxyForYObject } from '../../'
-
 async function createUsers (numberOfUsers) {
   if (Y.utils.globalRoom.users[0] != null) {
     await Y.utils.globalRoom.flushAll()

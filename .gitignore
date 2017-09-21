@@ -15,3 +15,5 @@ node_modules
 *.txt
 /lib/
 /dist/
+/.nyc_output/
+/coverage/

@@ -1,3 +1,6 @@
+/* parts of the yjs code require 'getRandom' to be bound to
+   the global scope, which is what we do here */
+
 var g
 if (typeof global !== 'undefined') {
   g = global
