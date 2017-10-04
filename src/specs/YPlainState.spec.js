@@ -1,9 +1,9 @@
 import { createUsers, flushAll } from './specHelper'
 import { setDefaults } from '../'
 
-async function endOfThread () {
+async function someTime () {
   return new Promise((resolve, reject) => {
-    setTimeout(resolve, 1)
+    setTimeout(resolve, 10)
   })
 }
 
@@ -31,7 +31,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     const { user, spy } = await singleUserAndSpy()
     user.name = 'Henry'
     expect(user.name).toEqual('Henry')
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -40,7 +40,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     const { user, spy } = await singleUserAndSpy()
     user.child = 4
     expect(user.child).toEqual(4)
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -50,7 +50,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     user.name = 'henry'
     await flushAll()
     delete user.name
-    await endOfThread()
+    await someTime()
     expect(user.child).toEqual(undefined)
     expect(spy.calls.count()).toEqual(2)
     done()
@@ -60,7 +60,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     const { user, spy } = await singleUserAndSpy()
     user.child = {}
     expect(user.child).toEqual({})
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -69,7 +69,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     const { user, spy } = await singleUserAndSpy()
     user.child = []
     expect(user.child).toEqual([])
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -78,7 +78,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     const { user, spy } = await singleUserAndSpy()
     user.child = {a: 1}
     expect(user.child).toEqual({a: 1})
-    await endOfThread()
+    await someTime()
     // because of timing issues, sometimes two events will be fired
     // This is an area for possible future improvement, to try and make
     // it always fire once
@@ -90,7 +90,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     const { user, spy } = await singleUserAndSpy()
     user.child = [1, 2, 5, 42, 8]
     expect(user.child).toEqual([1, 2, 5, 42, 8])
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -99,8 +99,8 @@ describe('single user, modifying the state, firing a single change event : ', ()
     const { user, spy } = await singleUserAndSpy()
     user.child = { x: { y: 1 } }
     expect(user.child).toEqual({ x: { y: 1 } })
-    await endOfThread()
-    expect([2, 1].includes(spy.calls.count())).toBe(true)
+    await someTime()
+    expect(spy.calls.count()).toEqual(1)
     done()
   })
 
@@ -109,7 +109,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     user.child = { x: 1 }
     user.child.x++
     expect(user.child.x).toEqual(2)
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -119,8 +119,8 @@ describe('single user, modifying the state, firing a single change event : ', ()
     user.child = []
     user.child.push('apple')
     expect(user.child).toEqual(['apple'])
-    await endOfThread()
-    expect([2, 1].includes(spy.calls.count())).toBe(true)
+    await someTime()
+    expect(spy.calls.count()).toEqual(1)
     done()
   })
 
@@ -129,7 +129,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     user.child = [1, 2, 3]
     user.child.pop()
     expect(user.child).toEqual([1, 2])
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -139,7 +139,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     user.child = [1, 2, 3]
     user.child.shift()
     expect(user.child).toEqual([2, 3])
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -149,8 +149,8 @@ describe('single user, modifying the state, firing a single change event : ', ()
     user.child = [1, 2, 3]
     user.child.unshift(19)
     expect(user.child).toEqual([19, 1, 2, 3])
-    await endOfThread()
-    expect([2, 1].includes(spy.calls.count())).toBe(true)
+    await someTime()
+    expect(spy.calls.count()).toEqual(1)
     done()
   })
 
@@ -159,7 +159,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     user.child = []
     user.child.push({v: 1})
     expect(user.child).toEqual([{ v: 1 }])
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -170,7 +170,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     user.child.push([12])
     user.child[0] = [24]
     expect(user.child).toEqual([[24]])
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })
@@ -182,7 +182,7 @@ describe('single user, modifying the state, firing a single change event : ', ()
     expect(user.value).toEqual(22)
     expect(user.name).toEqual('bob')
     expect(spy.calls.count()).toEqual(0)
-    await endOfThread()
+    await someTime()
     expect(spy.calls.count()).toEqual(1)
     done()
   })

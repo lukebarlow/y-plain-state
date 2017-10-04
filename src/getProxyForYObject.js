@@ -1,6 +1,9 @@
 import { dispatch } from 'd3-dispatch'
 import createProxyTraps from './createProxyTraps'
 import uid from './uid'
+import YInstance from './YInstance'
+import YArray from 'y-array'
+import YMap from 'y-map'
 
 /*
 This method retrieves the proxy object for a given Y object. The proxy
@@ -16,11 +19,19 @@ const PROXY = Symbol('proxy')
 const OBSERVED = Symbol('observed')
 const FIRE_CHANGE = Symbol('fireChange')
 
-
+let timeout = null
 
 // simple test for whether it's a Y type - probably a better test exists
-function isYType (o) {
-  return !!((o && o._model))
+function testIsYType (o) {
+  return !!((o && o._model && o.os.y))
+}
+
+function testIsYArray (o) {
+  return testIsYType(o) && 'toArray' in o
+}
+
+function testIsYMap (o) {
+  return testIsYType(o) && !testIsYArray(o)
 }
 
 function getNativeArrayForYArray (yArray, fireChangeAtEndOfThread) {
@@ -31,7 +42,7 @@ function getNativeArrayForYArray (yArray, fireChangeAtEndOfThread) {
       item = yArray.get(i)
     }
 
-    if (isYType(item)) {
+    if (testIsYType(item)) {
       let p = getProxyForYObject(item)
       p.observe(() => {
         fireChangeAtEndOfThread()
@@ -48,7 +59,7 @@ function getNativeObjectForYMap (yMap, fireChangeAtEndOfThread) {
   const object = {}
   yMap.keys().forEach((key) => {
     let value = yMap.get(key)
-    if (isYType(value)) {
+    if (testIsYType(value)) {
       value = getProxyForYObject(value)
       // apply the observer
       value.observe(() => {
@@ -96,35 +107,36 @@ function applyArrayOp (op, parentObject, value) {
   set value is a new y object, then we need to set up the proxy
   loop for that also
 */
-function createOpHandler (parentObject, isMap, fireChangeAtEndOfThread) {
+function createOpHandler (parentObject, isArray, fireChangeAtEndOfThread) {
   return function processOp (op) {
     // workaround. When adding a y type to a map, the op has undefined for
     // the value
-    if (['add', 'update'].includes(op.type) && op.object.constructor.name == 'YMap') {
+
+    if (['add', 'update'].includes(op.type) && testIsYMap(op.object)) {
       op.value = op.object.get(op.name)
     }
 
-    const value = isMap ? op.value : op.values[0]
+    const value = isArray ? op.values[0] : op.value
 
-    if (value && ['YMap', 'YArray'].includes(value.constructor.name)) {
+    if (value && testIsYType(value)) {
       const childProxy = getProxyForYObject(value)
-      if (isMap) {
-        applyMapOp(op, parentObject, childProxy)
-      } else {
+      if (isArray) {
         applyArrayOp(op, parentObject, childProxy)
+      } else {
+        applyMapOp(op, parentObject, childProxy)
       }
       fireChangeAtEndOfThread()
       childProxy.observe(() => {
         fireChangeAtEndOfThread()
       })
     } else {
-      if (isMap) {
-        applyMapOp(op, parentObject, op.value)
-      } else {
+      if (isArray) {
         if (op.values.length > 1) {
           throw new Error('Can currently only handle adding one value to an array at a time')
         }
         applyArrayOp(op, parentObject, op.values[0])
+      } else {
+        applyMapOp(op, parentObject, op.value)
       }
       fireChangeAtEndOfThread()
     }
@@ -139,35 +151,32 @@ function getProxyForYObject (y) {
   }
 
   y[PROXY] = 'PENDING'
-  const isMap = y.constructor.name === 'YMap'
-
-  // console.log('y.constructor.name is', y.constructor.name)
-  // console.log('isMap is', isMap)
+  const isArray = testIsYArray(y)
 
   const dispatcher = dispatch('change', 'syncChange')
-  
-  let timeout = null
 
   // this method effectively bundles multiple changes into one
   // change event which happens when the current thread
   // has finished executing
   function fireChangeAtEndOfThread () {
-    if (timeout === null) {
-      timeout = setTimeout(function () {
-        timeout = null
-        dispatcher.call('change')
-      }, 1)
+    if (timeout) {
+      clearTimeout(timeout)
     }
+    timeout = setTimeout(function () {
+      timeout = null
+      dispatcher.call('change')
+    }, 1)
     dispatcher.call('syncChange')
   }
 
-  const o = (isMap ? getNativeObjectForYMap(y, fireChangeAtEndOfThread)
-      : getNativeArrayForYArray(y, fireChangeAtEndOfThread))
+  const o = isArray
+    ? getNativeArrayForYArray(y, fireChangeAtEndOfThread)
+    : getNativeObjectForYMap(y, fireChangeAtEndOfThread)
 
   const proxy = new Proxy(o, createProxyTraps(y, fireChangeAtEndOfThread))
 
   if (!y[OBSERVED]) {
-    y.observe(createOpHandler(o, isMap, fireChangeAtEndOfThread))
+    y.observe(createOpHandler(o, isArray, fireChangeAtEndOfThread))
     y[OBSERVED] = true
   }
 
@@ -180,7 +189,7 @@ function getProxyForYObject (y) {
     dispatcher.on('change.' + uid(), handler)
   }
 
-  if (!isMap) {
+  if (isArray) {
     proxy.shift = function () {
       y.delete(0)
     }
