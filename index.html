@@ -4,7 +4,7 @@
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Yubiquity : Sync plain javascript data between clients">
+    <meta name="description" content="y-plain-state : Sync plain javascript data between clients">
     <style>
 body {
   margin: 20px;
@@ -28,25 +28,25 @@ i {
 
     </style>
 
-    <title>Yubiquity</title>
+    <title>y-plain-state</title>
   </head>
 
   <body>
-    <h1>Yubiquity</h1>
+    <h1>y-plain-state</h1>
     This page demonstrates 
-    <a href="https://github.com/lukebarlow/yubiquity">yubiquity</a>, 
+    <a href="https://github.com/lukebarlow/y-plain-state">y-plain-state</a>, 
     which synchronises arbitrary 
-    JavaScript data structures across browsers. To try it out, you'll 
-    need to open up the browser dev tools and type JavaScript commands
-    directly. There is a global object set up called <i>state</i>. You
+    JavaScript data structures across browsers. To try it out, open up the 
+    browser dev tools and type JavaScript commands directly in the console. 
+    There is a global object set up called <i>state</i>. You
     can manipulate this by typing regular JavaScript things like
     <p><i>state.foo = 'bar'</i></p>
     or
     <p><i>state.children = []<br />
     state.children.push({ name : 'first child'})
     </i></p>
-    The state will be updated in the box below, and in any other browser
-    looking at the same page.<br />
+    The state will be updated in the box below, and automatically sychronised,
+    in any other browser looking at the same page.<br />
     <br />
     Here are a few snippets to help start things off.<br />
     <br />
@@ -56,6 +56,6 @@ i {
     <button onclick="state.counter++">state.counter++</button>
 
     <pre id="data"></pre>
-    <script src="js/basic-example.js"></script>
+    <script src="js/y-plain-state-basic-example.js"></script>
   </body>
 </html>
