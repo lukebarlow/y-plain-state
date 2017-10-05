@@ -8,6 +8,7 @@
     "url": "https://github.com/lukebarlow/y-plain-state.git"
   },
   "scripts": {
-    "start": "DEBUG=true node server.js"
+    "start": "DEBUG=true node server.js",
+    "build": "../../node_modules/.bin/webpack"
   }
 }

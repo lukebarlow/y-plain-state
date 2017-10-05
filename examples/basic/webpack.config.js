@@ -9,7 +9,7 @@ module.exports = {
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: 'y-plain-state-basic-example.js',
     publicPath: '/js/'
   },
   module: {
