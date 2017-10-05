@@ -21,17 +21,16 @@ const FIRE_CHANGE = Symbol('fireChange')
 
 let timeout = null
 
-// simple test for whether it's a Y type - probably a better test exists
 function testIsYType (o) {
-  return !!((o && o._model && o.os.y))
+  return testIsYArray(o) || testIsYMap(o)
 }
 
 function testIsYArray (o) {
-  return testIsYType(o) && 'toArray' in o
+  return o instanceof YInstance.Y.Array.typeDefinition.class
 }
 
 function testIsYMap (o) {
-  return testIsYType(o) && !testIsYArray(o)
+  return o instanceof YInstance.Y.Map.typeDefinition.class
 }
 
 function getNativeArrayForYArray (yArray, fireChangeAtEndOfThread) {
